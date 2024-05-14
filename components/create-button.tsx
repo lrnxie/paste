@@ -14,27 +14,33 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Label } from '@/components/ui/label';
 
 export default function CreateButton() {
   const createPaste = useMutation(api.pastes.create);
 
   const [open, setOpen] = useState(false);
   const [content, setContent] = useState('');
+  const [isPublic, setIsPublic] = useState(false);
 
   function handleCreatePaste(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
-    createPaste({ content });
+    if (content) {
+      createPaste({ content, isPublic });
 
-    setOpen(false);
-    setContent('');
+      setOpen(false);
+      setContent('');
+      setIsPublic(false);
+    }
   }
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button variant="ghost" size="icon">
-          <ClipboardPlus className="size-4" />
+          <ClipboardPlus className="text-zinc-700" />
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
@@ -47,6 +53,14 @@ export default function CreateButton() {
             value={content}
             onChange={(e) => setContent(e.target.value)}
           />
+          <div className="mt-3 flex items-center gap-x-2">
+            <Checkbox
+              id="public-checkbox"
+              checked={isPublic}
+              onCheckedChange={() => setIsPublic(!isPublic)}
+            />
+            <Label htmlFor="public-checkbox">Public</Label>
+          </div>
         </form>
         <DialogFooter>
           <Button type="submit" form="create-paste">
